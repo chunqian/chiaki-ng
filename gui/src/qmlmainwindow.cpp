@@ -624,6 +624,7 @@ void QmlMainWindow::createSwapchain()
         .surface = surface,
         .present_mode = VK_PRESENT_MODE_FIFO_KHR,
         .swapchain_depth = 1,
+        .disable_10bit_sdr = true,
     };
     placebo_swapchain = pl_vulkan_create_swapchain(placebo_vulkan, &swapchain_params);
 }
