@@ -646,9 +646,6 @@ void QmlBackend::createSession(const StreamSessionConnectInfo &connect_info)
 
         static const QSet<int> zero_copy_formats = {
             AV_PIX_FMT_VULKAN,
-#ifdef Q_OS_LINUX
-            AV_PIX_FMT_VAAPI,
-#endif
         };
         if (frame->hw_frames_ctx && !zero_copy_formats.contains(frame->format)) {
             AVFrame *sw_frame = av_frame_alloc();
