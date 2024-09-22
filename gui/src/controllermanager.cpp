@@ -373,6 +373,8 @@ void Controller::UpdateState(SDL_Event event)
 
 inline bool Controller::HandleButtonEvent(SDL_ControllerButtonEvent event) {
 	ChiakiControllerButton ps_btn;
+	if(event.type == SDL_CONTROLLERBUTTONDOWN)
+		printf("Pressed %s\n", SDL_GameControllerGetStringForButton(static_cast<SDL_GameControllerButton>(event.button)));
 	switch(event.button)
 	{
 		case SDL_CONTROLLER_BUTTON_A:
