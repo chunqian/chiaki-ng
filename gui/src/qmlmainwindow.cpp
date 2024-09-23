@@ -112,11 +112,12 @@ QmlMainWindow::~QmlMainWindow()
 {
     Q_ASSERT(!placebo_swapchain);
 
+#ifndef Q_OS_MACOS
     QMetaObject::invokeMethod(quick_render, &QQuickRenderControl::invalidate);
     render_thread->quit();
     render_thread->wait();
     delete render_thread->parent();
-    delete render_thread;
+#endif
 
     delete quick_item;
     delete quick_window;
