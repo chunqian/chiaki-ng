@@ -757,6 +757,7 @@ void StreamSession::UpdateGamepads()
 	}
 
 	const auto available_controllers = ControllerManager::GetInstance()->GetAvailableControllers();
+	bool controller_added = false;
 	for(auto controller_id : available_controllers)
 	{
 		if(!controllers.contains(controller_id))
@@ -773,7 +774,7 @@ void StreamSession::UpdateGamepads()
 			connect(controller, &Controller::StateChanged, this, &StreamSession::SendFeedbackState);
 			connect(controller, &Controller::MicButtonPush, this, &StreamSession::ToggleMute);
 			controllers[controller_id] = controller;
-			updateControllerMappings();
+			controller_added = true;
 			if(controller->IsHandheld())
 			{
 #if CHIAKI_GUI_ENABLE_STEAMDECK_NATIVE
@@ -784,11 +785,15 @@ void StreamSession::UpdateGamepads()
 				haptics_handheld++;
 #endif
 			}
+			if (!controller->IsHandheld() && !controller->IsSteamVirtual())
+			{
+				haptics_handheld--;
+			}
 			if (controller->IsDualSense())
 			{
 				controller->SetDualsenseMic(muted);
 				if(this->haptics_output > 0)
-					return;
+					continue;
 				// Connect haptics audio device with a delay to give the sound system time to set up
 				QTimer::singleShot(1000, this, &StreamSession::ConnectHaptics);
 			}
@@ -796,16 +801,14 @@ void StreamSession::UpdateGamepads()
 			{
 				controller->SetDualsenseMic(muted);
 				if(this->haptics_output > 0)
-					return;
+					continue;
 				// Connect haptics audio device with a delay to give the sound system time to set up
 				QTimer::singleShot(15000, this, &StreamSession::ConnectHaptics);
 			}
-			if (!controller->IsHandheld() && !controller->IsSteamVirtual())
-			{
-				haptics_handheld--;
-			}
 		}
 	}
+	// if(controller_added)
+	// 	updateControllerMappings();
 	
 	SendFeedbackState();
 #endif
