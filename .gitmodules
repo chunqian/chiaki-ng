@@ -1,9 +1,9 @@
 [submodule "test/munit"]
 	path = test/munit
-	url = https://github.com/nemequ/munit.git
+	url = git@github.com:nemequ/munit.git
 [submodule "third-party/nanopb"]
 	path = third-party/nanopb
-	url = https://github.com/nanopb/nanopb.git
+	url = git@github.com:nanopb/nanopb.git
 [submodule "third-party/jerasure"]
 	path = third-party/jerasure
 	url = https://git.sr.ht/~thestr4ng3r/jerasure
@@ -12,13 +12,16 @@
 	url = https://git.sr.ht/~thestr4ng3r/gf-complete
 [submodule "android/app/src/main/cpp/oboe"]
 	path = android/app/src/main/cpp/oboe
-	url = https://github.com/google/oboe
+	url = git@github.com:google/oboe
 [submodule "switch/borealis"]
 	path = switch/borealis
 	url = https://git.sr.ht/~thestr4ng3r/borealis
 [submodule "third-party/curl"]
 	path = third-party/curl
-	url = https://github.com/curl/curl
+	url = git@github.com:curl/curl
 [submodule "third-party/cpp-steam-tools"]
 	path = third-party/cpp-steam-tools
-	url = https://github.com/streetpea/cpp-steam-tools.git
+	url = git@github.com:streetpea/cpp-steam-tools.git
+[submodule "third-party/mbedtls"]
+	path = third-party/mbedtls
+	url = git@github.com:Mbed-TLS/mbedtls.git

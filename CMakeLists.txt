@@ -121,23 +121,23 @@ if(CHIAKI_LIB_OPENSSL_EXTERNAL_PROJECT)
 	include(OpenSSLExternalProject)
 endif()
 
-if(CHIAKI_LIB_ENABLE_MBEDTLS)
-	add_definitions(-DCHIAKI_LIB_ENABLE_MBEDTLS)
-	if(CHIAKI_LIB_MBEDTLS_EXTERNAL_PROJECT)
-		set(FETCHCONTENT_QUIET CACHE BOOL FALSE)
-		include(FetchContent)
-		set(ENABLE_TESTING CACHE INTERNAL OFF)
-		set(ENABLE_PROGRAMS CACHE INTERNAL OFF)
-		set(USE_SHARED_MBEDTLS_LIBRARY CACHE INTERNAL OFF)
-		FetchContent_Declare(
-			mbedtls
-			GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
-			GIT_TAG 8b3f26a5ac38d4fdccbc5c5366229f3e01dafcc0 # v2.28.0
-			GIT_PROGRESS TRUE
-		)
-		FetchContent_MakeAvailable(mbedtls)
-	endif()
-endif()
+# if(CHIAKI_LIB_ENABLE_MBEDTLS)
+# 	add_definitions(-DCHIAKI_LIB_ENABLE_MBEDTLS)
+# 	if(CHIAKI_LIB_MBEDTLS_EXTERNAL_PROJECT)
+# 		set(FETCHCONTENT_QUIET CACHE BOOL FALSE)
+# 		include(FetchContent)
+# 		set(ENABLE_TESTING CACHE INTERNAL OFF)
+# 		set(ENABLE_PROGRAMS CACHE INTERNAL OFF)
+# 		set(USE_SHARED_MBEDTLS_LIBRARY CACHE INTERNAL OFF)
+# 		FetchContent_Declare(
+# 			mbedtls
+# 			GIT_REPOSITORY git@github.com:Mbed-TLS/mbedtls.git
+# 			GIT_TAG 8b3f26a5ac38d4fdccbc5c5366229f3e01dafcc0 # v2.28.0
+# 			GIT_PROGRESS TRUE
+# 		)
+# 		FetchContent_MakeAvailable(mbedtls)
+# 	endif()
+# endif()
 
 if(CHIAKI_ENABLE_STEAM_SHORTCUT)
 	message(STATUS "Steam shortcut enabled")
