@@ -20,6 +20,33 @@ cmake --build .
 popd
 echo $PWD
 
+#################### 构建 curl ####################
+
+pushd third-party/curl
+echo $PWD
+
+mkdir -p build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DBUILD_CURL_EXE=OFF \
+-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_STATIC_LIBS=ON \
+-DBUILD_STATIC_CURL=OFF \
+-DCURL_USE_MBEDTLS=ON \
+-DCURL_USE_LIBPSL=OFF \
+-DCURL_USE_PKGCONFIG=OFF \
+-DENABLE_WEBSOCKETS=ON \
+-DHTTP_ONLY=ON \
+-DCURL_WERROR=OFF \
+-DMBEDTLS_INCLUDE_DIR="../../mbedtls/include" \
+-DPC_MBEDTLS_LIBDIR="../../mbedtls/build/library" \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+cmake --build .
+
+popd
+echo $PWD
+
 #################### 构建 chiaki ####################
 
 mkdir -p build
