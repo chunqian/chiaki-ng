@@ -61,8 +61,8 @@ if(NOT CHIAKI_USE_SYSTEM_MBEDTLS)
     ##################
 
     set(ENABLE_PROGRAMS OFF)
-    set(MBEDTLS_FATAL_WARNINGS OFF)
     set(ENABLE_TESTING OFF)
+    set(MBEDTLS_FATAL_WARNINGS OFF)
 
     # 添加 mbedtls 源代码目录
     add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
@@ -73,15 +73,15 @@ if(NOT CHIAKI_USE_SYSTEM_CURL)
 	# libcurl (with experimental WebSocket support enabled)
 	##################
 
-	set(CURL_WERROR OFF)
 	set(BUILD_CURL_EXE OFF)
 	set(BUILD_SHARED_LIBS OFF)
 	set(BUILD_STATIC_LIBS ON)
 	set(BUILD_STATIC_CURL OFF)
 	set(CURL_USE_MBEDTLS ON)
 	set(CURL_USE_LIBPSL OFF)
-	set(HTTP_ONLY ON)
 	set(ENABLE_WEBSOCKETS ON)
+	set(HTTP_ONLY ON)
+	set(CURL_WERROR OFF)
 
 if(WIN32)
 	set(USE_SSLEAY ON)
