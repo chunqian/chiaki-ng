@@ -3,6 +3,13 @@ cmake_minimum_required(VERSION 3.2)
 
 project(chiaki)
 
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+if(POLICY CMP0148)
+    cmake_policy(SET CMP0148 OLD)
+endif()
+
+add_compile_options(-Wno-documentation)
+
 # Like option(), but the value can also be AUTO
 macro(tri_option name desc default)
     set("${name}" "${default}" CACHE STRING "${desc}")

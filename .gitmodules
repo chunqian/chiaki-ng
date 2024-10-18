@@ -12,13 +12,13 @@
 	url = https://git.sr.ht/~thestr4ng3r/gf-complete
 [submodule "android/app/src/main/cpp/oboe"]
 	path = android/app/src/main/cpp/oboe
-	url = git@github.com:google/oboe
+	url = git@github.com:google/oboe.git
 [submodule "switch/borealis"]
 	path = switch/borealis
 	url = https://git.sr.ht/~thestr4ng3r/borealis
 [submodule "third-party/curl"]
 	path = third-party/curl
-	url = git@github.com:curl/curl
+	url = git@github.com:curl/curl.git
 [submodule "third-party/cpp-steam-tools"]
 	path = third-party/cpp-steam-tools
 	url = git@github.com:streetpea/cpp-steam-tools.git
