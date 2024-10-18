@@ -8,7 +8,7 @@ pushd third-party/mbedtls
 echo $PWD
 
 mkdir -p build
-cd build
+pushd build
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DENABLE_PROGRAMS=OFF \
 -DENABLE_TESTING=OFF \
@@ -18,6 +18,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 cmake --build .
 
 popd
+popd
 echo $PWD
 
 #################### 构建 curl ####################
@@ -26,7 +27,7 @@ pushd third-party/curl
 echo $PWD
 
 mkdir -p build
-cd build
+pushd build
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DBUILD_CURL_EXE=OFF \
 -DBUILD_SHARED_LIBS=OFF \
@@ -39,18 +40,21 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DHTTP_ONLY=ON \
 -DCURL_WERROR=OFF \
 -DMBEDTLS_INCLUDE_DIR="../../mbedtls/include" \
--DPC_MBEDTLS_LIBDIR="../../mbedtls/build/library" \
+-DMBEDTLS_LIBRARY="../../mbedtls/build/library/libmbedtls.a" \
+-DMBEDX509_LIBRARY="../../mbedtls/build/library/libmbedx509.a" \
+-DMBEDCRYPTO_LIBRARY="../../mbedtls/build/library/libmbedcrypto.a" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 cmake --build .
 
+popd
 popd
 echo $PWD
 
 #################### 构建 chiaki ####################
 
 mkdir -p build
-cd build
+pushd build
 cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DCHIAKI_ENABLE_TESTS=OFF \
 -DCHIAKI_ENABLE_CLI=OFF \
@@ -73,6 +77,8 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DCHIAKI_USE_SYSTEM_JERASURE=OFF \
 -DCHIAKI_USE_SYSTEM_NANOPB=OFF \
 -DCHIAKI_USE_SYSTEM_CURL=OFF \
+-DCURL_INCLUDE_DIR="../third-party/curl/include" \
+-DCURL_LIBRARY="../third-party/curl/build/lib/libcurl.a" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 cmake --build .

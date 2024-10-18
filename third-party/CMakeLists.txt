@@ -55,18 +55,18 @@ if(NOT CHIAKI_USE_SYSTEM_JERASURE)
 	add_library(Jerasure::Jerasure ALIAS jerasure)
 endif()
 
-if(NOT CHIAKI_USE_SYSTEM_MBEDTLS)
-    ##################
-    # mbedtls
-    ##################
+# if(NOT CHIAKI_USE_SYSTEM_MBEDTLS)
+#     ##################
+#     # mbedtls
+#     ##################
 
-    set(ENABLE_PROGRAMS OFF)
-    set(ENABLE_TESTING OFF)
-    set(MBEDTLS_FATAL_WARNINGS OFF)
+#     set(ENABLE_PROGRAMS OFF)
+#     set(ENABLE_TESTING OFF)
+#     set(MBEDTLS_FATAL_WARNINGS OFF)
 
-    # 添加 mbedtls 源代码目录
-    add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
-endif()
+#     # 添加 mbedtls 源代码目录
+#     add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
+# endif()
 
 if(NOT CHIAKI_USE_SYSTEM_CURL)
 	##################
@@ -100,10 +100,34 @@ endif()
 		add_library(Libidn2::Libidn2 ALIAS PkgConfig::PkgLibIdn2)
 		set(Libidn2_FOUND ON)
 	endif()
+	# add_subdirectory(curl)
 
-	set(MBEDTLS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/third-party/mbedtls/include" CACHE STRING "MbedTLS include dir")
-	set(PC_MBEDTLS_LIBDIR "${CMAKE_SOURCE_DIR}/third-party/mbedtls/build/library" CACHE STRING "MbedTLS lib dir")
-	add_subdirectory(curl)
+	# 查找 libcurl 库
+	find_library(CURL_LIBRARY NAMES curl
+		HINTS ${PC_CURL_LIBDIR}
+	)
+
+	# 查找 curl 头文件目录
+	find_path(CURL_INCLUDE_DIR NAMES "curl/curl.h"
+		HINTS ${PC_CURL_INCLUDEDIR}
+	)
+
+	# 检查是否找到了库和头文件
+	if(NOT CURL_LIBRARY)
+		message(FATAL_ERROR "libcurl library not found!")
+	endif()
+
+	if(NOT CURL_INCLUDE_DIR)
+		message(FATAL_ERROR "libcurl include directory not found!")
+	endif()
+
+	# 创建 libcurl_static 的库目标为 INTERFACE 类型
+	add_library(libcurl_static INTERFACE)
+	target_include_directories(libcurl_static INTERFACE ${CURL_INCLUDE_DIR})
+	target_link_libraries(libcurl_static INTERFACE ${CURL_LIBRARY})
+
+	add_library(CURL::libcurl_static ALIAS libcurl_static)
+
 	# Exported library is CURL::libcurl_static
 endif()
 
