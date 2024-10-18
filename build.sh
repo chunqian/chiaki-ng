@@ -2,6 +2,26 @@
 
 set -eu
 
+#################### 构建 mbedtls ####################
+
+pushd third-party/mbedtls
+echo $PWD
+
+mkdir -p build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DENABLE_PROGRAMS=OFF \
+-DENABLE_TESTING=OFF \
+-DMBEDTLS_FATAL_WARNINGS=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+cmake --build .
+
+popd
+echo $PWD
+
+#################### 构建 chiaki ####################
+
 mkdir -p build
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Release \

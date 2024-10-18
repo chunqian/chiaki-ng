@@ -4,10 +4,16 @@
 # 查找头文件
 find_path(MbedTLS_INCLUDE_DIR mbedtls PATH_SUFFIXES include)
 
+message(STATUS "MbedTLS_INCLUDE_DIR is set to: ${MbedTLS_INCLUDE_DIR}")
+
 # 查找库文件
 find_library(MbedTLS_LIBRARY NAMES mbedtls)
 find_library(MbedCrypto_LIBRARY NAMES mbedcrypto)
 find_library(MbedX509_LIBRARY NAMES mbedx509)
+
+message(STATUS "MbedTLS_LIBRARY is set to: ${MbedTLS_LIBRARY}")
+message(STATUS "MbedCrypto_LIBRARY is set to: ${MbedCrypto_LIBRARY}")
+message(STATUS "MbedX509_LIBRARY is set to: ${MbedX509_LIBRARY}")
 
 # 使用 find_package_handle_standard_args 来检查库和包含路径
 include(FindPackageHandleStandardArgs)
