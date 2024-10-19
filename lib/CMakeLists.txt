@@ -105,11 +105,6 @@ add_subdirectory(protobuf)
 set_source_files_properties(${CHIAKI_LIB_PROTO_SOURCE_FILES} ${CHIAKI_LIB_PROTO_HEADER_FILES} PROPERTIES GENERATED TRUE)
 include_directories("${CHIAKI_LIB_PROTO_INCLUDE_DIR}")
 
-if(CHIAKI_LIB_ENABLE_OPUS)
-	find_package(Opus REQUIRED)
-	include_directories(${Opus_INCLUDE_DIRS})
-endif()
-
 add_library(chiaki-lib ${HEADER_FILES} ${SOURCE_FILES} ${CHIAKI_LIB_PROTO_SOURCE_FILES} ${CHIAKI_LIB_PROTO_HEADER_FILES})
 configure_file(config.h.in include/chiaki/config.h)
 target_include_directories(chiaki-lib PUBLIC "${CMAKE_CURRENT_BINARY_DIR}/include")
@@ -129,22 +124,39 @@ if(APPLE)
 	target_link_libraries(chiaki-lib "-framework CoreServices")
 endif()
 
-target_include_directories(chiaki-lib PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(chiaki-lib PUBLIC "${CMAKE_SOURCE_DIR}/lib/include")
 
 find_package(Threads REQUIRED)
 target_link_libraries(chiaki-lib Threads::Threads)
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(json-c REQUIRED json-c IMPORTED_TARGET)
-target_include_directories(chiaki-lib PRIVATE ${json-c_INCLUDE_DIRS})
-target_link_libraries(chiaki-lib PkgConfig::json-c)
+# find_package(PkgConfig REQUIRED)
+# pkg_search_module(json-c REQUIRED json-c IMPORTED_TARGET)
+# target_include_directories(chiaki-lib PRIVATE ${json-c_INCLUDE_DIRS})
+# target_link_libraries(chiaki-lib PkgConfig::json-c)
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(MINIUPNPC REQUIRED miniupnpc IMPORTED_TARGET)
-target_link_libraries(chiaki-lib PkgConfig::MINIUPNPC)
+# find_package(PkgConfig REQUIRED)
+# pkg_search_module(MINIUPNPC REQUIRED miniupnpc IMPORTED_TARGET)
+# target_link_libraries(chiaki-lib PkgConfig::MINIUPNPC)
+
+target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/json-c")
+
+target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/miniupnp/miniupnpc/include")
+
+if(CHIAKI_LIB_ENABLE_OPUS)
+	# find_package(Opus REQUIRED)
+	# include_directories(${Opus_INCLUDE_DIRS})
+
+	add_definitions(-DCHIAKI_LIB_ENABLE_MBEDTLS)
+	set(Opus_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/opus/include")
+
+	target_include_directories(chiaki-lib PRIVATE ${Opus_INCLUDE_DIRS})
+endif()
 
 if(CHIAKI_LIB_ENABLE_MBEDTLS)
 	if(CHIAKI_LIB_MBEDTLS_EXTERNAL_PROJECT)
+		set(MbedTLS_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/mbedtls/include")
+
+		target_include_directories(chiaki-lib PRIVATE ${MbedTLS_INCLUDE_DIRS})
 		target_link_libraries(chiaki-lib mbedtls mbedx509 mbedcrypto)
 	else()
 		# provided by mbedtls-static (mbedtls-devel)

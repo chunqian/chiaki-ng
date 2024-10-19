@@ -5,7 +5,7 @@
 
 #include <chiaki/opusencoder.h>
 
-#include <opus/opus.h>
+#include <opus.h>
 
 #include <string.h>
 

@@ -139,8 +139,6 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DCHIAKI_USE_SYSTEM_JERASURE=OFF \
 -DCHIAKI_USE_SYSTEM_NANOPB=OFF \
 -DCHIAKI_USE_SYSTEM_CURL=OFF \
--DCURL_INCLUDE_DIR="../third-party/curl/include" \
--DCURL_LIBRARY="../third-party/curl/build/lib/libcurl.a" \
 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
 -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 cmake --build .
