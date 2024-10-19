@@ -89,31 +89,21 @@ endif()
     # endif()
     # add_subdirectory(curl)
 
-    # 查找 libcurl 库
-    find_library(CURL_LIBRARY NAMES curl
-        HINTS ${PC_CURL_LIBDIR}
-    )
-
-    # 查找 curl 头文件目录
-    find_path(CURL_INCLUDE_DIR NAMES "curl/curl.h"
-        HINTS ${PC_CURL_INCLUDEDIR}
-    )
-
-    # 检查是否找到了库和头文件
-    if(NOT CURL_LIBRARY)
-        message(FATAL_ERROR "libcurl library not found!")
-    endif()
-
-    if(NOT CURL_INCLUDE_DIR)
-        message(FATAL_ERROR "libcurl include directory not found!")
-    endif()
-
     # 创建 libcurl_static 的库目标为 INTERFACE 类型
     add_library(libcurl_static INTERFACE)
-    target_include_directories(libcurl_static INTERFACE ${CURL_INCLUDE_DIR})
-    target_link_libraries(libcurl_static INTERFACE ${CURL_LIBRARY})
+    target_include_directories(libcurl_static INTERFACE "${CMAKE_SOURCE_DIR}/third-party/curl/include")
 
-    add_library(CURL::libcurl_static ALIAS libcurl_static)
+    # 手动查找 curl 库, 优先查找自定义路径
+    find_library(CURL_LIB NAMES curl HINTS "${CMAKE_SOURCE_DIR}/third-party/curl/build/lib")
+
+    # 如果找到库, 打印路径并链接
+    if (CURL_LIB)
+        message(STATUS "Found curl at: ${CURL_LIB}")
+        target_link_libraries(libcurl_static INTERFACE ${CURL_LIB})
+        add_library(CURL::libcurl_static ALIAS libcurl_static)
+    else()
+        message(FATAL_ERROR "Could not find curl library.")
+    endif()
 
     # Exported library is CURL::libcurl_static
 endif()
