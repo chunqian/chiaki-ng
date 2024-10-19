@@ -1,123 +1,123 @@
 
 if(NOT CHIAKI_USE_SYSTEM_NANOPB)
-	##################
-	# nanopb
-	##################
+    ##################
+    # nanopb
+    ##################
 
-	add_definitions(-DPB_C99_STATIC_ASSERT) # Fix PB_STATIC_ASSERT on msvc without using C11 for now
-	add_subdirectory(nanopb EXCLUDE_FROM_ALL)
-	set(NANOPB_GENERATOR_PY "${CMAKE_CURRENT_SOURCE_DIR}/nanopb/generator/nanopb_generator.py" PARENT_SCOPE)
-	add_library(nanopb INTERFACE)
-	target_link_libraries(nanopb INTERFACE protobuf-nanopb-static)
-	target_include_directories(nanopb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/nanopb")
-	target_compile_definitions(nanopb INTERFACE -DPB_C99_STATIC_ASSERT) # see above
-	add_library(Nanopb::nanopb ALIAS nanopb)
+    add_definitions(-DPB_C99_STATIC_ASSERT) # Fix PB_STATIC_ASSERT on msvc without using C11 for now
+    add_subdirectory(nanopb EXCLUDE_FROM_ALL)
+    set(NANOPB_GENERATOR_PY "${CMAKE_CURRENT_SOURCE_DIR}/nanopb/generator/nanopb_generator.py" PARENT_SCOPE)
+    add_library(nanopb INTERFACE)
+    target_link_libraries(nanopb INTERFACE protobuf-nanopb-static)
+    target_include_directories(nanopb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/nanopb")
+    target_compile_definitions(nanopb INTERFACE -DPB_C99_STATIC_ASSERT) # see above
+    add_library(Nanopb::nanopb ALIAS nanopb)
 endif()
 
 if(NOT CHIAKI_USE_SYSTEM_JERASURE)
-	##################
-	# gf-complete
-	##################
+    ##################
+    # gf-complete
+    ##################
 
-	set(GF_COMPLETE_SOURCE
-			gf-complete/src/gf.c
-			gf-complete/src/gf_wgen.c
-			gf-complete/src/gf_w4.c
-			gf-complete/src/gf_w8.c
-			gf-complete/src/gf_w16.c
-			gf-complete/src/gf_w32.c
-			gf-complete/src/gf_w64.c
-			gf-complete/src/gf_w128.c
-			gf-complete/src/gf_rand.c
-			gf-complete/src/gf_general.c
-			gf-complete/src/gf_cpu.c)
+    set(GF_COMPLETE_SOURCE
+            gf-complete/src/gf.c
+            gf-complete/src/gf_wgen.c
+            gf-complete/src/gf_w4.c
+            gf-complete/src/gf_w8.c
+            gf-complete/src/gf_w16.c
+            gf-complete/src/gf_w32.c
+            gf-complete/src/gf_w64.c
+            gf-complete/src/gf_w128.c
+            gf-complete/src/gf_rand.c
+            gf-complete/src/gf_general.c
+            gf-complete/src/gf_cpu.c)
 
-	# TODO: support NEON
+    # TODO: support NEON
 
-	add_library(gf_complete STATIC ${GF_COMPLETE_SOURCE})
-	target_include_directories(gf_complete PUBLIC gf-complete/include)
+    add_library(gf_complete STATIC ${GF_COMPLETE_SOURCE})
+    target_include_directories(gf_complete PUBLIC gf-complete/include)
 
-	##################
-	# jerasure
-	##################
+    ##################
+    # jerasure
+    ##################
 
-	set(JERASURE_SOURCE
-			jerasure/src/galois.c
-			jerasure/src/jerasure.c
-			jerasure/src/reed_sol.c
-			jerasure/src/cauchy.c
-			jerasure/src/liberation.c)
+    set(JERASURE_SOURCE
+            jerasure/src/galois.c
+            jerasure/src/jerasure.c
+            jerasure/src/reed_sol.c
+            jerasure/src/cauchy.c
+            jerasure/src/liberation.c)
 
-	add_library(jerasure STATIC ${JERASURE_SOURCE})
-	target_include_directories(jerasure PUBLIC jerasure/include)
-	target_link_libraries(jerasure gf_complete)
+    add_library(jerasure STATIC ${JERASURE_SOURCE})
+    target_include_directories(jerasure PUBLIC jerasure/include)
+    target_link_libraries(jerasure gf_complete)
 
-	add_library(Jerasure::Jerasure ALIAS jerasure)
+    add_library(Jerasure::Jerasure ALIAS jerasure)
 endif()
 
 if(NOT CHIAKI_USE_SYSTEM_CURL)
-	##################
-	# libcurl (with experimental WebSocket support enabled)
-	##################
+    ##################
+    # libcurl (with experimental WebSocket support enabled)
+    ##################
 
-	set(BUILD_CURL_EXE OFF)
-	set(BUILD_SHARED_LIBS OFF)
-	set(BUILD_STATIC_LIBS ON)
-	set(BUILD_STATIC_CURL OFF)
-	set(CURL_USE_MBEDTLS ON)
-	set(CURL_USE_LIBPSL OFF)
-	set(CURL_USE_PKGCONFIG OFF)
-	set(ENABLE_WEBSOCKETS ON)
-	set(HTTP_ONLY ON)
-	set(CURL_WERROR OFF)
+    set(BUILD_CURL_EXE OFF)
+    set(BUILD_SHARED_LIBS OFF)
+    set(BUILD_STATIC_LIBS ON)
+    set(BUILD_STATIC_CURL OFF)
+    set(CURL_USE_MBEDTLS ON)
+    set(CURL_USE_LIBPSL OFF)
+    set(CURL_USE_PKGCONFIG OFF)
+    set(ENABLE_WEBSOCKETS ON)
+    set(HTTP_ONLY ON)
+    set(CURL_WERROR OFF)
 
 if(WIN32)
-	set(USE_SSLEAY ON)
-	set(CURL_USE_SCHANNEL ON)
+    set(USE_SSLEAY ON)
+    set(CURL_USE_SCHANNEL ON)
 endif()
-	# find_package(PkgConfig QUIET)
-	# if (PKG_CONFIG_FOUND)
-	# 	pkg_check_modules(PkgLibIdn2 IMPORTED_TARGET GLOBAL libidn2)
-	# endif ()
+    # find_package(PkgConfig QUIET)
+    # if (PKG_CONFIG_FOUND)
+    #     pkg_check_modules(PkgLibIdn2 IMPORTED_TARGET GLOBAL libidn2)
+    # endif ()
 
-	# if (PkgLibIdn2_FOUND)
-	# 	set(LIBIDN2_INCLUDE_DIR ${PkgLibIdn2_INCLUDE_DIRS} CACHE FILEPATH "libidn2 include path")
-	# 	set(LIBIDN2_LIBRARIES ${PkgLibIdn2_LIBRARIES} CACHE STRING "libidn2 libraries")
-	# 	set(LIBIDN2_VERSION ${PkgLibIdn2_VERSION})
-	# 	add_library(Libidn2::Libidn2 ALIAS PkgConfig::PkgLibIdn2)
-	# 	set(Libidn2_FOUND ON)
-	# endif()
-	# add_subdirectory(curl)
+    # if (PkgLibIdn2_FOUND)
+    #     set(LIBIDN2_INCLUDE_DIR ${PkgLibIdn2_INCLUDE_DIRS} CACHE FILEPATH "libidn2 include path")
+    #     set(LIBIDN2_LIBRARIES ${PkgLibIdn2_LIBRARIES} CACHE STRING "libidn2 libraries")
+    #     set(LIBIDN2_VERSION ${PkgLibIdn2_VERSION})
+    #     add_library(Libidn2::Libidn2 ALIAS PkgConfig::PkgLibIdn2)
+    #     set(Libidn2_FOUND ON)
+    # endif()
+    # add_subdirectory(curl)
 
-	# 查找 libcurl 库
-	find_library(CURL_LIBRARY NAMES curl
-		HINTS ${PC_CURL_LIBDIR}
-	)
+    # 查找 libcurl 库
+    find_library(CURL_LIBRARY NAMES curl
+        HINTS ${PC_CURL_LIBDIR}
+    )
 
-	# 查找 curl 头文件目录
-	find_path(CURL_INCLUDE_DIR NAMES "curl/curl.h"
-		HINTS ${PC_CURL_INCLUDEDIR}
-	)
+    # 查找 curl 头文件目录
+    find_path(CURL_INCLUDE_DIR NAMES "curl/curl.h"
+        HINTS ${PC_CURL_INCLUDEDIR}
+    )
 
-	# 检查是否找到了库和头文件
-	if(NOT CURL_LIBRARY)
-		message(FATAL_ERROR "libcurl library not found!")
-	endif()
+    # 检查是否找到了库和头文件
+    if(NOT CURL_LIBRARY)
+        message(FATAL_ERROR "libcurl library not found!")
+    endif()
 
-	if(NOT CURL_INCLUDE_DIR)
-		message(FATAL_ERROR "libcurl include directory not found!")
-	endif()
+    if(NOT CURL_INCLUDE_DIR)
+        message(FATAL_ERROR "libcurl include directory not found!")
+    endif()
 
-	# 创建 libcurl_static 的库目标为 INTERFACE 类型
-	add_library(libcurl_static INTERFACE)
-	target_include_directories(libcurl_static INTERFACE ${CURL_INCLUDE_DIR})
-	target_link_libraries(libcurl_static INTERFACE ${CURL_LIBRARY})
+    # 创建 libcurl_static 的库目标为 INTERFACE 类型
+    add_library(libcurl_static INTERFACE)
+    target_include_directories(libcurl_static INTERFACE ${CURL_INCLUDE_DIR})
+    target_link_libraries(libcurl_static INTERFACE ${CURL_LIBRARY})
 
-	add_library(CURL::libcurl_static ALIAS libcurl_static)
+    add_library(CURL::libcurl_static ALIAS libcurl_static)
 
-	# Exported library is CURL::libcurl_static
+    # Exported library is CURL::libcurl_static
 endif()
 
 if(CHIAKI_ENABLE_STEAM_SHORTCUT)
-	add_subdirectory(cpp-steam-tools)
+    add_subdirectory(cpp-steam-tools)
 endif()
