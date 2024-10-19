@@ -2,6 +2,65 @@
 
 set -eu
 
+#################### 构建 opus ####################
+
+pushd third-party/opus
+echo $PWD
+
+mkdir -p build
+pushd build
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DOPUS_BUILD_SHARED_LIBRARY=OFF \
+-DOPUS_BUILD_TESTING=OFF \
+-DOPUS_BUILD_PROGRAMS=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+cmake --build .
+
+popd
+popd
+echo $PWD
+
+#################### 构建 miniupnp ####################
+
+pushd third-party/miniupnp/miniupnpc
+echo $PWD
+
+mkdir -p build
+pushd build
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DUPNPC_BUILD_STATIC=ON \
+-DUPNPC_BUILD_SHARED=OFF \
+-DUPNPC_BUILD_TESTS=OFF \
+-DUPNPC_BUILD_SAMPLE=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+cmake --build .
+
+popd
+popd
+echo $PWD
+
+#################### 构建 json-c ####################
+
+pushd third-party/json-c
+echo $PWD
+
+mkdir -p build
+pushd build
+cmake .. -DCMAKE_BUILD_TYPE=Release \
+-DBUILD_STATIC_LIBS=ON \
+-DBUILD_SHARED_LIBS=OFF \
+-DBUILD_APPS=OFF \
+-DBUILD_TESTING=OFF \
+-DCMAKE_OSX_DEPLOYMENT_TARGET=10.15 \
+-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+cmake --build .
+
+popd
+popd
+echo $PWD
+
 #################### 构建 mbedtls ####################
 
 pushd third-party/mbedtls
