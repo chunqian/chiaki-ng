@@ -129,35 +129,77 @@ target_include_directories(chiaki-lib PUBLIC "${CMAKE_SOURCE_DIR}/lib/include")
 find_package(Threads REQUIRED)
 target_link_libraries(chiaki-lib Threads::Threads)
 
-# find_package(PkgConfig REQUIRED)
-# pkg_search_module(json-c REQUIRED json-c IMPORTED_TARGET)
-# target_include_directories(chiaki-lib PRIVATE ${json-c_INCLUDE_DIRS})
-# target_link_libraries(chiaki-lib PkgConfig::json-c)
-
-# find_package(PkgConfig REQUIRED)
-# pkg_search_module(MINIUPNPC REQUIRED miniupnpc IMPORTED_TARGET)
-# target_link_libraries(chiaki-lib PkgConfig::MINIUPNPC)
+#################### json-c ####################
 
 target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/json-c")
 
+# 手动查找 json-c 库, 优先查找自定义路径
+find_library(JSONC_LIB NAMES json-c HINTS "${CMAKE_SOURCE_DIR}/third-party/json-c/build")
+
+# 如果找到库, 打印路径并链接
+if (JSONC_LIB)
+	message(STATUS "Found json-c at: ${JSONC_LIB}")
+	target_link_libraries(chiaki-lib ${JSONC_LIB})
+else()
+	message(FATAL_ERROR "Could not find json-c library.")
+endif()
+
+#################### miniupnpc ####################
+
 target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/miniupnp/miniupnpc/include")
 
-if(CHIAKI_LIB_ENABLE_OPUS)
-	# find_package(Opus REQUIRED)
-	# include_directories(${Opus_INCLUDE_DIRS})
+# 手动查找 miniupnpc 库, 优先查找自定义路径
+find_library(MINIUPNPC_LIB NAMES miniupnpc HINTS "${CMAKE_SOURCE_DIR}/third-party/miniupnp/miniupnpc/build")
 
-	add_definitions(-DCHIAKI_LIB_ENABLE_MBEDTLS)
-	set(Opus_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/opus/include")
-
-	target_include_directories(chiaki-lib PRIVATE ${Opus_INCLUDE_DIRS})
+# 如果找到库, 打印路径并链接
+if (MINIUPNPC_LIB)
+	message(STATUS "Found miniupnpc at: ${MINIUPNPC_LIB}")
+	target_link_libraries(chiaki-lib ${MINIUPNPC_LIB})
+else()
+	message(FATAL_ERROR "Could not find miniupnpc library.")
 endif()
+
+#################### opus ####################
+
+if(CHIAKI_LIB_ENABLE_OPUS)
+	add_definitions(-DCHIAKI_LIB_ENABLE_MBEDTLS)
+	target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/opus/include")
+
+	# 手动查找 opus 库, 优先查找自定义路径
+	find_library(OPUS_LIB NAMES opus HINTS "${CMAKE_SOURCE_DIR}/third-party/opus/build")
+
+	# 如果找到库, 打印路径并链接
+	if (OPUS_LIB)
+		message(STATUS "Found opus at: ${OPUS_LIB}")
+		target_link_libraries(chiaki-lib ${OPUS_LIB})
+	else()
+		message(FATAL_ERROR "Could not find opus library.")
+	endif()
+endif()
+
+#################### mbedtls ####################
 
 if(CHIAKI_LIB_ENABLE_MBEDTLS)
 	if(CHIAKI_LIB_MBEDTLS_EXTERNAL_PROJECT)
-		set(MbedTLS_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/third-party/mbedtls/include")
+		target_include_directories(chiaki-lib PRIVATE "${CMAKE_SOURCE_DIR}/third-party/mbedtls/include")
 
-		target_include_directories(chiaki-lib PRIVATE ${MbedTLS_INCLUDE_DIRS})
-		target_link_libraries(chiaki-lib mbedtls mbedx509 mbedcrypto)
+		# 手动查找 mbedtls 库, 优先查找自定义路径
+		find_library(MBEDTLS_LIB NAMES mbedtls HINTS "${CMAKE_SOURCE_DIR}/third-party/mbedtls/build/library")
+		find_library(MBEDX509_LIB NAMES mbedx509 HINTS "${CMAKE_SOURCE_DIR}/third-party/mbedtls/build/library")
+		find_library(MBEDCRYPTO_LIB NAMES mbedcrypto HINTS "${CMAKE_SOURCE_DIR}/third-party/mbedtls/build/library")
+
+		# 检查是否找到库
+		if (MBEDTLS_LIB AND MBEDX509_LIB AND MBEDCRYPTO_LIB)
+			message(STATUS "Found mbedtls libraries:")
+			message(STATUS " - mbedtls: ${MBEDTLS_LIB}")
+			message(STATUS " - mbedx509: ${MBEDX509_LIB}")
+			message(STATUS " - mbedcrypto: ${MBEDCRYPTO_LIB}")
+
+			# 链接库到 chiaki-lib
+			target_link_libraries(chiaki-lib ${MBEDTLS_LIB} ${MBEDX509_LIB} ${MBEDCRYPTO_LIB})
+		else()
+			message(FATAL_ERROR "Could not find all required mbedtls libraries.")
+		endif()
 	else()
 		# provided by mbedtls-static (mbedtls-devel)
 		find_library(MBEDTLS mbedtls)
