@@ -442,6 +442,60 @@ xcodebuild -create-xcframework \
     -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
     -output "${BUILD_DIR}/XCFramework/mbedtls.xcframework"
 
+#################### 构建 mbedx509.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=third-party/mbedtls/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libmbedx509.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: mbedx509 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 mbedx509 xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/mbedx509.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/mbedx509.xcframework"
+
+#################### 构建 mbedcrypto.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=third-party/mbedtls/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libmbedcrypto.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: mbedcrypto 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 mbedcrypto xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/mbedcrypto.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/mbedcrypto.xcframework"
+
 #################### 构建 curl.xcframework ####################
 
 THIRD_PARTY_BUILD_DIR=third-party/curl/build
