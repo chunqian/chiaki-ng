@@ -5,10 +5,6 @@
 
 #include "common.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -16,6 +12,10 @@ extern "C" {
 #include <windows.h>
 #else
 #include <pthread.h>
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 typedef void *(*ChiakiThreadFunc)(void *);

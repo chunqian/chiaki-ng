@@ -8,15 +8,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef CHIAKI_LIB_ENABLE_MBEDTLS
 #include "mbedtls/ecdh.h"
 #include "mbedtls/ctr_drbg.h"
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define CHIAKI_ECDH_SECRET_SIZE 32
 

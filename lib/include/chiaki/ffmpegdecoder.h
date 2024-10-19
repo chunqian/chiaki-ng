@@ -5,11 +5,11 @@
 #include <chiaki/log.h>
 #include <chiaki/thread.h>
 
+#include <libavcodec/avcodec.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include <libavcodec/avcodec.h>
 
 typedef struct chiaki_ffmpeg_decoder_t ChiakiFfmpegDecoder;
 

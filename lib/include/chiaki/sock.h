@@ -7,12 +7,18 @@
 
 #include <stdbool.h>
 
+#ifdef _WIN32
+#include <winsock2.h>
+#else
+#include <unistd.h>
+#include <errno.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifdef _WIN32
-#include <winsock2.h>
 typedef SOCKET chiaki_socket_t;
 #define CHIAKI_SOCKET_IS_INVALID(s) ((s) == INVALID_SOCKET)
 #define CHIAKI_INVALID_SOCKET INVALID_SOCKET
@@ -22,8 +28,6 @@ typedef SOCKET chiaki_socket_t;
 #define CHIAKI_SOCKET_EINPROGRESS (WSAGetLastError() == WSAEWOULDBLOCK)
 #define CHIAKI_SOCKET_BUF_TYPE char*
 #else
-#include <unistd.h>
-#include <errno.h>
 typedef int chiaki_socket_t;
 #define CHIAKI_SOCKET_IS_INVALID(s) ((s) < 0)
 #define CHIAKI_INVALID_SOCKET (-1)
