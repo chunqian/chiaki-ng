@@ -204,10 +204,10 @@ COMMON_HEADER_FILES=(
 )
 
 # 查找并验证生成的库文件路径
-STATIC_LIB_PATH=$(find . -name "libchiaki.a")
+STATIC_LIB=$(find . -name "libchiaki.a")
 
 # 如果库文件未生成, 抛出错误
-if [ -z "$STATIC_LIB_PATH" ]; then
+if [ -z "$STATIC_LIB" ]; then
     echo "Error: chiaki 静态库未生成"
     exit 1
 fi
@@ -249,16 +249,222 @@ echo $PWD
 rm -rdf "${BUILD_DIR}/XCFramework/chiaki.xcframework"
 
 xcodebuild -create-xcframework \
-    -library "build/lib/${STATIC_LIB_PATH}" \
+    -library "build/lib/${STATIC_LIB}" \
     -headers "${HEADERS_DIR}-macos" \
     -output "${BUILD_DIR}/XCFramework/chiaki.xcframework"
 
+#################### 构建 gf_complete.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=build/third-party
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libgf_complete.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: gf_complete 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 gf_complete xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/gf_complete.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/gf_complete.xcframework"
+
+#################### 构建 jerasure.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=build/third-party
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libjerasure.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: jerasure 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 jerasure xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/jerasure.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/jerasure.xcframework"
+
+#################### 构建 protobuf_nanopb.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=build/third-party/nanopb
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libprotobuf-nanopb.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: protobuf-nanopb 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 protobuf_nanopb xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/protobuf_nanopb.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/protobuf_nanopb.xcframework"
+
 #################### 构建 opus.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=third-party/opus/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libopus.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: opus 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 opus xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/opus.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/opus.xcframework"
 
 #################### 构建 miniupnpc.xcframework ####################
 
-#################### 构建 jsonc.xcframework ####################
+THIRD_PARTY_BUILD_DIR=third-party/miniupnp/miniupnpc/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libminiupnpc.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: miniupnpc 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 miniupnpc xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/miniupnpc.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/miniupnpc.xcframework"
+
+#################### 构建 json_c.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=third-party/json-c/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libjson-c.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: json-c 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 json_c xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/json_c.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/json_c.xcframework"
 
 #################### 构建 mbedtls.xcframework ####################
 
+THIRD_PARTY_BUILD_DIR=third-party/mbedtls/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libmbedtls.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: mbedtls 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 mbedtls xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/mbedtls.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/mbedtls.xcframework"
+
 #################### 构建 curl.xcframework ####################
+
+THIRD_PARTY_BUILD_DIR=third-party/curl/build
+
+pushd ${THIRD_PARTY_BUILD_DIR}
+echo $PWD
+
+# 查找并验证生成的库文件路径
+STATIC_LIB=$(find . -name "libcurl.a")
+
+# 如果库文件未生成, 抛出错误
+if [ -z "$STATIC_LIB" ]; then
+    echo "Error: curl 静态库未生成"
+    exit 1
+fi
+
+# 返回主目录
+popd
+echo $PWD
+
+# 创建 curl xcframework
+rm -rdf "${BUILD_DIR}/XCFramework/curl.xcframework"
+
+xcodebuild -create-xcframework \
+    -library "${THIRD_PARTY_BUILD_DIR}/$STATIC_LIB" \
+    -output "${BUILD_DIR}/XCFramework/curl.xcframework"
