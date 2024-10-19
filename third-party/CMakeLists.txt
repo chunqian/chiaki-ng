@@ -55,19 +55,6 @@ if(NOT CHIAKI_USE_SYSTEM_JERASURE)
 	add_library(Jerasure::Jerasure ALIAS jerasure)
 endif()
 
-# if(NOT CHIAKI_USE_SYSTEM_MBEDTLS)
-#     ##################
-#     # mbedtls
-#     ##################
-
-#     set(ENABLE_PROGRAMS OFF)
-#     set(ENABLE_TESTING OFF)
-#     set(MBEDTLS_FATAL_WARNINGS OFF)
-
-#     # 添加 mbedtls 源代码目录
-#     add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
-# endif()
-
 if(NOT CHIAKI_USE_SYSTEM_CURL)
 	##################
 	# libcurl (with experimental WebSocket support enabled)
@@ -88,18 +75,18 @@ if(WIN32)
 	set(USE_SSLEAY ON)
 	set(CURL_USE_SCHANNEL ON)
 endif()
-	find_package(PkgConfig QUIET)
-	if (PKG_CONFIG_FOUND)
-		pkg_check_modules(PkgLibIdn2 IMPORTED_TARGET GLOBAL libidn2)
-	endif ()
+	# find_package(PkgConfig QUIET)
+	# if (PKG_CONFIG_FOUND)
+	# 	pkg_check_modules(PkgLibIdn2 IMPORTED_TARGET GLOBAL libidn2)
+	# endif ()
 
-	if (PkgLibIdn2_FOUND)
-		set(LIBIDN2_INCLUDE_DIR ${PkgLibIdn2_INCLUDE_DIRS} CACHE FILEPATH "libidn2 include path")
-		set(LIBIDN2_LIBRARIES ${PkgLibIdn2_LIBRARIES} CACHE STRING "libidn2 libraries")
-		set(LIBIDN2_VERSION ${PkgLibIdn2_VERSION})
-		add_library(Libidn2::Libidn2 ALIAS PkgConfig::PkgLibIdn2)
-		set(Libidn2_FOUND ON)
-	endif()
+	# if (PkgLibIdn2_FOUND)
+	# 	set(LIBIDN2_INCLUDE_DIR ${PkgLibIdn2_INCLUDE_DIRS} CACHE FILEPATH "libidn2 include path")
+	# 	set(LIBIDN2_LIBRARIES ${PkgLibIdn2_LIBRARIES} CACHE STRING "libidn2 libraries")
+	# 	set(LIBIDN2_VERSION ${PkgLibIdn2_VERSION})
+	# 	add_library(Libidn2::Libidn2 ALIAS PkgConfig::PkgLibIdn2)
+	# 	set(Libidn2_FOUND ON)
+	# endif()
 	# add_subdirectory(curl)
 
 	# 查找 libcurl 库
