@@ -115,12 +115,12 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
 
     setConnectState(PsnConnectState::NotStarted);
     connect(settings, &Settings::RegisteredHostsUpdated, this, &QmlBackend::hostsChanged);
+    connect(settings, &Settings::HiddenHostsUpdated, this, &QmlBackend::hiddenHostsChanged);
     connect(settings, &Settings::ManualHostsUpdated, this, &QmlBackend::hostsChanged);
     connect(settings, &Settings::CurrentProfileChanged, this, &QmlBackend::profileChanged);
     connect(&discovery_manager, &DiscoveryManager::HostsUpdated, this, &QmlBackend::updateDiscoveryHosts);
     discovery_manager.SetSettings(settings);
     setDiscoveryEnabled(true);
-
     connect(ControllerManager::GetInstance(), &ControllerManager::AvailableControllersUpdated, this, &QmlBackend::updateControllers);
     updateControllers();
     updateControllerMappings();
@@ -136,14 +136,14 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
     wakeup_start_timer->setSingleShot(true);
     if(autoConnect() && !auto_connect_nickname.isEmpty())
     {
-        connect(psn_auto_connect_timer, &QTimer::timeout, this, [this, settings]
+        connect(psn_auto_connect_timer, &QTimer::timeout, this, [this]
         {
             int i = 0;
             for (const auto &host : std::as_const(psn_hosts))
             {
                 if(host.GetName() == auto_connect_nickname)
                 {
-                    int index = discovery_manager.GetHosts().size() + settings->GetManualHosts().size() + i;
+                    int index = discovery_manager.GetHosts().size() + this->settings->GetManualHosts().size() + i;
                     connectToHost(index);
                     return;
                 }
@@ -153,8 +153,8 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
         });
         psn_auto_connect_timer->start(PSN_INTERNET_WAIT_SECONDS * 1000);
     }
-    connect(psn_reconnect_timer, &QTimer::timeout, this, [this, settings]{
-        QString refresh = settings->GetPsnRefreshToken();
+    connect(psn_reconnect_timer, &QTimer::timeout, this, [this]{
+        QString refresh = this->settings->GetPsnRefreshToken();
         if(refresh.isEmpty())
         {
             qCWarning(chiakiGui) << "No refresh token found, can't refresh PSN token to use PSN remote connection";
@@ -164,7 +164,7 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
             setConnectState(PsnConnectState::ConnectFailed);
             return;
         }
-        PSNToken *psnToken = new PSNToken(settings, this);
+        PSNToken *psnToken = new PSNToken(this->settings, this);
         connect(psnToken, &PSNToken::PSNTokenError, this, [this](const QString &error) {
             qCWarning(chiakiGui) << "Internet is currently down...waiting 5 seconds" << error;
             psn_reconnect_tries++;
@@ -188,7 +188,7 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
             psn_reconnect_timer->stop();
             createSession(session_info);
         });
-        QString refresh_token = settings->GetPsnRefreshToken();
+        QString refresh_token = this->settings->GetPsnRefreshToken();
         psnToken->RefreshPsnToken(std::move(refresh_token));
     });
     connect(wakeup_start_timer, &QTimer::timeout, this, [this]
@@ -216,7 +216,7 @@ QmlBackend::QmlBackend(Settings *settings, QmlMainWindow *window)
             resume_session = true;
         }
     });
-    connect(sleep_inhibit, &SystemdInhibit::resume, this, [this, settings]() {
+    connect(sleep_inhibit, &SystemdInhibit::resume, this, [this]() {
         qCInfo(chiakiGui) << "Resumed from sleep";
         if (resume_session) {
             qCInfo(chiakiGui) << "Resuming session...";
@@ -291,6 +291,7 @@ void QmlBackend::profileChanged()
     emit hostsChanged();
     updateControllerMappings();
     connect(settings, &Settings::RegisteredHostsUpdated, this, &QmlBackend::hostsChanged);
+    connect(settings, &Settings::HiddenHostsUpdated, this, &QmlBackend::hiddenHostsChanged);
     connect(settings, &Settings::ManualHostsUpdated, this, &QmlBackend::hostsChanged);
     connect(settings, &Settings::CurrentProfileChanged, this, &QmlBackend::profileChanged);
     connect(settings, &Settings::ControllerMappingsUpdated, this, &QmlBackend::updateControllerMappings);
@@ -309,14 +310,14 @@ void QmlBackend::profileChanged()
     psn_reconnect_timer = new QTimer(this);
     if(autoConnect() && !auto_connect_nickname.isEmpty())
     {
-        connect(psn_auto_connect_timer, &QTimer::timeout, this, [this, settings_copy]
+        connect(psn_auto_connect_timer, &QTimer::timeout, this, [this]
         {
             int i = 0;
             for (const auto &host : std::as_const(psn_hosts))
             {
                 if(host.GetName() == auto_connect_nickname)
                 {
-                    int index = discovery_manager.GetHosts().size() + settings_copy->GetManualHosts().size() + i;
+                    int index = discovery_manager.GetHosts().size() + this->settings->GetManualHosts().size() + i;
                     connectToHost(index);
                     return;
                 }
@@ -326,8 +327,8 @@ void QmlBackend::profileChanged()
         });
         psn_auto_connect_timer->start(PSN_INTERNET_WAIT_SECONDS * 1000);
     }
-    connect(psn_reconnect_timer, &QTimer::timeout, this, [this, settings_copy]{
-        QString refresh = settings_copy->GetPsnRefreshToken();
+    connect(psn_reconnect_timer, &QTimer::timeout, this, [this]{
+        QString refresh = this->settings->GetPsnRefreshToken();
         if(refresh.isEmpty())
         {
             qCWarning(chiakiGui) << "No refresh token found, can't refresh PSN token to use PSN remote connection";
@@ -337,7 +338,7 @@ void QmlBackend::profileChanged()
             setConnectState(PsnConnectState::ConnectFailed);
             return;
         }
-        PSNToken *psnToken = new PSNToken(settings_copy, this);
+        PSNToken *psnToken = new PSNToken(this->settings, this);
         connect(psnToken, &PSNToken::PSNTokenError, this, [this](const QString &error) {
             qCWarning(chiakiGui) << "Internet is currently down...waiting 5 seconds" << error;
             psn_reconnect_tries++;
@@ -361,7 +362,7 @@ void QmlBackend::profileChanged()
             psn_reconnect_timer->stop();
             createSession(session_info);
         });
-        QString refresh_token = settings_copy->GetPsnRefreshToken();
+        QString refresh_token = this->settings->GetPsnRefreshToken();
         psnToken->RefreshPsnToken(std::move(refresh_token));
     });
     delete sleep_inhibit;
@@ -377,7 +378,7 @@ void QmlBackend::profileChanged()
             resume_session = true;
         }
     });
-    connect(sleep_inhibit, &SystemdInhibit::resume, this, [this, settings_copy]() {
+    connect(sleep_inhibit, &SystemdInhibit::resume, this, [this]() {
         qCInfo(chiakiGui) << "Resumed from sleep";
         if (resume_session) {
             qCInfo(chiakiGui) << "Resuming session...";
@@ -408,6 +409,7 @@ void QmlBackend::profileChanged()
     });
     refreshPsnToken();
     emit hostsChanged();
+    emit hiddenHostsChanged();
 }
 
 bool QmlBackend::discoveryEnabled() const
@@ -452,13 +454,31 @@ QVariantList QmlBackend::hosts() const
     auto manual_hosts = settings->GetManualHosts();
     for (const auto &host : discovery_manager.GetHosts()) {
         QVariantMap m;
-        bool registered = settings->GetRegisteredHostRegistered(host.GetHostMAC());
+        HostMAC host_mac = host.GetHostMAC();
+        bool registered = settings->GetRegisteredHostRegistered(host_mac);
+        bool hidden = settings->GetHiddenHostHidden(host_mac);
+        if(registered && hidden)
+        {
+            settings->RemoveHiddenHost(host_mac);
+            bool hidden = false;
+        }
+        // Update hidden host nickname if it's changed
+        if(hidden)
+        {
+            auto hidden_host = settings->GetHiddenHost(host_mac);
+            if(hidden_host.GetNickname() != host.host_name)
+            {
+                hidden_host.SetNickname(host.host_name);
+                settings->RemoveHiddenHost(host_mac);
+                settings->AddHiddenHost(hidden_host);
+            }
+        }
         m["discovered"] = true;
         bool manual = false;
         for(int i = 0; i < manual_hosts.length(); i++)
         {
             const auto &manual_host = manual_hosts.at(i);
-            if(manual_host.GetRegistered() && manual_host.GetMAC() == host.GetHostMAC() && manual_host.GetHost() == host.host_addr)
+            if(manual_host.GetRegistered() && manual_host.GetMAC() == host_mac && manual_host.GetHost() == host.host_addr)
             {
                 manual = true;
                 discovered_manual_hosts.append(manual_host);
@@ -469,12 +489,12 @@ QVariantList QmlBackend::hosts() const
         m["duid"] = "";
         m["address"] = host.host_addr;
         m["ps5"] = host.ps5;
-        m["mac"] = host.GetHostMAC().ToString();
+        m["mac"] = host_mac.ToString();
         m["state"] = chiaki_discovery_host_state_string(host.state);
         m["app"] = host.running_app_name;
         m["titleId"] = host.running_app_titleid;
         m["registered"] = registered;
-        m["display"] = true;
+        m["display"] = hidden ? false : true;
         discovered_nicknames.append(host.host_name);
         out.append(m);
         if(!host.ps5 && registered)
@@ -849,6 +869,48 @@ void QmlBackend::addManualHost(int index, const QString &address)
     ManualHost host(-1, address, registered, hmac);
     settings->SetManualHost(host);
 }
+
+void QmlBackend::hideHost(const QString &mac_string, const QString &host_nickname)
+{
+    QByteArray mac_array = QByteArray::fromHex(mac_string.toUtf8());
+    const char *mac_ptr = mac_array.constData();
+    if (strlen(mac_ptr) != 6)
+    {
+        qCCritical(chiakiGui) << " Aborting hidden host creation because mac string couldn't be converted to a valid host mac!";
+        return;
+    }
+    HostMAC mac((const uint8_t *)mac_ptr);
+    HiddenHost hidden_host(mac, host_nickname);
+    settings->AddHiddenHost(hidden_host);
+    emit hostsChanged();
+}
+
+void QmlBackend::unhideHost(const QString &mac_string)
+{
+    QByteArray mac_array = QByteArray::fromHex(mac_string.toUtf8());
+    const char *mac_ptr = mac_array.constData();
+    if (strlen(mac_ptr) != 6)
+    {
+        qCCritical(chiakiGui) << " Aborting hidden host creation because mac string couldn't be converted to a valid host mac!";
+        return;
+    }
+    HostMAC mac((const uint8_t *)mac_ptr);
+    settings->RemoveHiddenHost(mac);
+    emit hostsChanged();
+}
+
+QVariantList QmlBackend::hiddenHosts() const
+{
+    QVariantList out;
+    for (const auto &host : settings->GetHiddenHosts()) {
+        QVariantMap m;
+        m["name"] = host.GetNickname();
+        m["mac"] = host.GetMAC().ToString();
+        out.append(m);
+    }
+    return out;
+}
+
 
 bool QmlBackend::registerHost(const QString &host, const QString &psn_id, const QString &pin, const QString &cpin, bool broadcast, int target, const QJSValue &callback)
 {

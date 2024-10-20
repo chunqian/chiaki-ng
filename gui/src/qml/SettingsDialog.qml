@@ -186,22 +186,6 @@ DialogView {
 
                     Label {
                         Layout.alignment: Qt.AlignRight
-                        text: qsTr("Buttons By Position:")
-                    }
-
-                    C.CheckBox {
-                        text: qsTr("Use buttons by position instead of by label")
-                        checked: Chiaki.settings.buttonsByPosition
-                        onToggled: Chiaki.settings.buttonsByPosition = checked
-                    }
-
-                    Label {
-                        Layout.alignment: Qt.AlignRight
-                        text: qsTr("(Unchecked)")
-                    }
-
-                    Label {
-                        Layout.alignment: Qt.AlignRight
                         text: qsTr("Steam Deck Vertical:")
                         visible: typeof Chiaki.settings.verticalDeck !== "undefined"
                     }
@@ -1089,7 +1073,6 @@ DialogView {
                     anchors {
                         top: consolesLabel.bottom
                         horizontalCenter: consolesLabel.horizontalCenter
-                        bottom: parent.bottom
                         topMargin: 10
                     }
                     width: 700
@@ -1122,6 +1105,48 @@ DialogView {
                             lastInFocusChain: index == consolesView.count - 1
                             text: qsTr("Delete")
                             onClicked: root.showConfirmDialog(qsTr("Delete Console"), qsTr("Are you sure you want to delete this console?"), () => Chiaki.settings.deleteRegisteredHost(index));
+                            Material.roundedScale: Material.SmallScale
+                            Material.accent: Material.Red
+                        }
+                    }
+                }
+
+                Label {
+                    id: hiddenConsolesLabel
+                    anchors {
+                        top: consolesView.bottom
+                        horizontalCenter: consolesView.horizontalCenter
+                        topMargin: 50
+                    }
+                    text: qsTr("Hidden Consoles")
+                    font.bold: true
+                }
+
+                ListView {
+                    id: hiddenConsolesView
+                    anchors {
+                        top: hiddenConsolesLabel.bottom
+                        horizontalCenter: hiddenConsolesLabel.horizontalCenter
+                        bottom: parent.bottom
+                        topMargin: 10
+                    }
+                    width: 700
+                    clip: true
+                    model: Chiaki.hiddenHosts
+                    delegate: ItemDelegate {
+                        text: "%1 (%2)".arg(modelData.mac).arg(modelData.name)
+                        height: 80
+                        width: parent ? parent.width : 0
+
+                        C.Button {
+                            anchors {
+                                right: parent.right
+                                verticalCenter: parent.verticalCenter
+                                rightMargin: 20
+                            }
+                            lastInFocusChain: index == consolesView.count - 1
+                            text: qsTr("Unhide")
+                            onClicked: root.showConfirmDialog(qsTr("Unhide Console"), qsTr("Are you sure you want to unhide this console?"), () => Chiaki.unhideHost(modelData.mac));
                             Material.roundedScale: Material.SmallScale
                             Material.accent: Material.Red
                         }
@@ -1303,11 +1328,11 @@ DialogView {
                         horizontalCenter: parent.horizontalCenter
                         topMargin: 20
                     }
-                    columns: 1
+                    columns: 3
                     rowSpacing: 20
-                    columnSpacing: 20
+                    columnSpacing: 100
 
-
+                    Label { }
                     C.Button {
                         id: controllerMappingChange
                         firstInFocusChain: true
@@ -1316,14 +1341,76 @@ DialogView {
                             reset: false
                         });
                     }
-
+                    Label { }
+                    Label { }
                     C.Button {
                         id: controllerMappingReset
-                        lastInFocusChain: true
                         text: "Reset Controller Mapping"
                         onClicked: controllerMappingDialog.show({
                             reset: true
                         });
+                    }
+                    Label { }
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("Dpad Touchpad Emulation")
+                    }
+                    C.CheckBox {
+                        checked: Chiaki.settings.dpadTouchIncrement
+                        onToggled: Chiaki.settings.dpadTouchEnabled = !Chiaki.settings.dpadTouchEnabled
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("(Checked)")
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("Dpad Touch Increment:")
+                        visible: Chiaki.settings.dpadTouchEnabled
+                    }
+
+                    C.Slider {
+                        Layout.preferredWidth: 250
+                        from: 1
+                        to: 1079
+                        stepSize: 1
+                        visible: Chiaki.settings.dpadTouchEnabled
+                        value: Chiaki.settings.dpadTouchIncrement
+                        onMoved: Chiaki.settings.dpadTouchIncrement = value
+
+                        Label {
+                            anchors {
+                                left: parent.right
+                                verticalCenter: parent.verticalCenter
+                                leftMargin: 10
+                            }
+                            text: qsTr("%1 mm").arg(parent.value / 100)
+                        }
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("(0.3 mm)")
+                        visible: Chiaki.settings.dpadTouchEnabled
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("Buttons By Position:")
+                    }
+
+                    C.CheckBox {
+                        text: qsTr("Use buttons by position instead of by label")
+                        checked: Chiaki.settings.buttonsByPosition
+                        onToggled: Chiaki.settings.buttonsByPosition = checked
+                        lastInFocusChain: true
+                    }
+
+                    Label {
+                        Layout.alignment: Qt.AlignRight
+                        text: qsTr("(Unchecked)")
                     }
                 }
             }
