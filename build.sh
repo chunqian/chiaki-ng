@@ -101,6 +101,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Release \
 -DENABLE_WEBSOCKETS=ON \
 -DHTTP_ONLY=ON \
 -DCURL_WERROR=OFF \
+-DUSE_APPLE_IDN=ON \
 -DMBEDTLS_INCLUDE_DIR="../../mbedtls/include" \
 -DMBEDTLS_LIBRARY="../../mbedtls/build/library/libmbedtls.a" \
 -DMBEDX509_LIBRARY="../../mbedtls/build/library/libmbedx509.a" \
