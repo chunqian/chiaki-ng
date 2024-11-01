@@ -138,7 +138,7 @@ endif()
 #         set(USE_SHARED_MBEDTLS_LIBRARY CACHE INTERNAL OFF)
 #         FetchContent_Declare(
 #             mbedtls
-#             GIT_REPOSITORY git@github.com:Mbed-TLS/mbedtls.git
+#             GIT_REPOSITORY https://github.com/Mbed-TLS/mbedtls.git
 #             GIT_TAG 8b3f26a5ac38d4fdccbc5c5366229f3e01dafcc0 # v2.28.0
 #             GIT_PROGRESS TRUE
 #         )

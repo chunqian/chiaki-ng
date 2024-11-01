@@ -1,9 +1,9 @@
 [submodule "test/munit"]
 	path = test/munit
-	url = git@github.com:nemequ/munit.git
+	url = https://github.com/nemequ/munit.git
 [submodule "third-party/nanopb"]
 	path = third-party/nanopb
-	url = git@github.com:nanopb/nanopb.git
+	url = https://github.com/nanopb/nanopb.git
 [submodule "third-party/jerasure"]
 	path = third-party/jerasure
 	url = https://git.sr.ht/~thestr4ng3r/jerasure
@@ -12,25 +12,25 @@
 	url = https://git.sr.ht/~thestr4ng3r/gf-complete
 [submodule "android/app/src/main/cpp/oboe"]
 	path = android/app/src/main/cpp/oboe
-	url = git@github.com:google/oboe.git
+	url = https://github.com/google/oboe.git
 [submodule "switch/borealis"]
 	path = switch/borealis
 	url = https://git.sr.ht/~thestr4ng3r/borealis
 [submodule "third-party/curl"]
 	path = third-party/curl
-	url = git@github.com:curl/curl.git
+	url = https://github.com/curl/curl.git
 [submodule "third-party/cpp-steam-tools"]
 	path = third-party/cpp-steam-tools
-	url = git@github.com:streetpea/cpp-steam-tools.git
+	url = https://github.com/streetpea/cpp-steam-tools.git
 [submodule "third-party/mbedtls"]
 	path = third-party/mbedtls
-	url = git@github.com:Mbed-TLS/mbedtls.git
+	url = https://github.com/Mbed-TLS/mbedtls.git
 [submodule "third-party/miniupnp"]
 	path = third-party/miniupnp
-	url = git@github.com:miniupnp/miniupnp.git
+	url = https://github.com/miniupnp/miniupnp.git
 [submodule "third-party/opus"]
 	path = third-party/opus
 	url = https://gitlab.xiph.org/xiph/opus.git
 [submodule "third-party/json-c"]
 	path = third-party/json-c
-	url = git@github.com:json-c/json-c.git
+	url = https://github.com/json-c/json-c.git
