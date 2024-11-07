@@ -14,14 +14,12 @@ DialogView {
     buttonText: qsTr("✓ Register")
     buttonEnabled: hostField.text.trim() && pin.acceptableInput && cpin.acceptableInput && (!onlineId.visible || onlineId.text.trim()) && (!accountId.visible || accountId.text.trim())
     StackView.onActivated: {
-        if (host == "255.255.255.255")
-            broadcast.checked = true;
         if(Chiaki.settings.psnAccountId)
             accountId.text = Chiaki.settings.psnAccountId
     }
     onAccepted: {
         let psnId = onlineId.visible ? onlineId.text.trim() : accountId.text.trim();
-        let registerOk = Chiaki.registerHost(hostField.text.trim(), psnId, pin.text.trim(), cpin.text.trim(), broadcast.checked, consoleButtons.checkedButton.target, function(msg, ok, done) {
+        let registerOk = Chiaki.registerHost(hostField.text.trim(), psnId, pin.text.trim(), cpin.text.trim(), hostField.text.trim() == "255.255.255.255", consoleButtons.checkedButton.target, function(msg, ok, done) {
             if (!done)
                 logArea.text += msg + "\n";
             else
@@ -160,15 +158,6 @@ DialogView {
 
             Label {
                 Layout.alignment: Qt.AlignRight
-                text: qsTr("Broadcast:")
-            }
-
-            C.CheckBox {
-                id: broadcast
-            }
-
-            Label {
-                Layout.alignment: Qt.AlignRight
                 text: qsTr("Console:")
             }
 
@@ -209,47 +198,55 @@ DialogView {
             buttons: [ps4_7, ps4_75, ps4_8, ps5_0]
         }
 
-        Dialog {
-            id: logDialog
-            parent: Overlay.overlay
-            x: Math.round((root.width - width) / 2)
-            y: Math.round((root.height - height) / 2)
-            title: qsTr("Register Console")
-            modal: true
-            closePolicy: Popup.NoAutoClose
-            standardButtons: Dialog.Cancel
-            Material.roundedScale: Material.MediumScale
-            onOpened: logArea.forceActiveFocus()
-            onClosed: stack.pop();
-            KeyNavigation.up: {
-                if(logScrollbar.position > 0.001)
-                    logFlick.flick(0, 500);
-            }
-            KeyNavigation.down: {
-                if(logScrollbar.position < 1.0 - logScrollbar.size - 0.001)
-                    logFlick.flick(0, -500);           
-            }
-
-            Flickable {
-                id: logFlick
-                implicitWidth: 600
-                implicitHeight: 400
-                clip: true
-                contentWidth: logArea.contentWidth
-                contentHeight: logArea.contentHeight
-                flickableDirection: Flickable.AutoFlickIfNeeded
-                ScrollBar.vertical: ScrollBar {
-                    id: logScrollbar
-                    policy: ScrollBar.AlwaysOn
-                    visible: logFlick.contentHeight > logFlick.implicitHeight
+        Item {
+            Keys.onPressed: (event) => {
+                switch (event.key) {
+                case Qt.Key_Up:
+                    if(logScrollbar.position > 0.001)
+                        logFlick.flick(0, 500);
+                    event.accepted = true;
+                    break;
+                case Qt.Key_Down:
+                    if(logScrollbar.position < 1.0 - logScrollbar.size - 0.001)
+                        logFlick.flick(0, -500);
+                    event.accepted = true;
+                    break;
                 }
+            }
+            Dialog {
+                id: logDialog
+                parent: Overlay.overlay
+                x: Math.round((root.width - width) / 2)
+                y: Math.round((root.height - height) / 2)
+                title: qsTr("Register Console")
+                modal: true
+                closePolicy: Popup.NoAutoClose
+                standardButtons: Dialog.Cancel
+                Material.roundedScale: Material.MediumScale
+                onOpened: logArea.forceActiveFocus()
+                onClosed: stack.pop();
 
-                Label {
-                    id: logArea
-                    width: logFlick.width
-                    wrapMode: TextEdit.Wrap
-                    Keys.onReturnPressed: if (logDialog.standardButtons == Dialog.Close) logDialog.close()
-                    Keys.onEscapePressed: logDialog.close()
+                Flickable {
+                    id: logFlick
+                    implicitWidth: 600
+                    implicitHeight: 400
+                    clip: true
+                    contentWidth: logArea.contentWidth
+                    contentHeight: logArea.contentHeight
+                    flickableDirection: Flickable.AutoFlickIfNeeded
+                    ScrollBar.vertical: ScrollBar {
+                        id: logScrollbar
+                        policy: ScrollBar.AlwaysOn
+                        visible: logFlick.contentHeight > logFlick.implicitHeight
+                    }
+
+                    Label {
+                        id: logArea
+                        width: logFlick.width
+                        wrapMode: TextEdit.Wrap
+                        Keys.onReturnPressed: if (logDialog.standardButtons == Dialog.Close) logDialog.close()
+                        Keys.onEscapePressed: logDialog.close()
+                    }
                 }
             }
         }

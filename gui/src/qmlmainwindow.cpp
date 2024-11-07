@@ -102,25 +102,24 @@ QmlMainWindow::QmlMainWindow(const StreamSessionConnectInfo &connect_info)
     if (connect_info.fullscreen || connect_info.zoom || connect_info.stretch)
         showFullScreen();
 
-    connect(session, &StreamSession::ConnectedChanged, this, [this]() {
-        if (session->IsConnected())
-            connect(session, &StreamSession::SessionQuit, qGuiApp, &QGuiApplication::quit);
-    });
+    connect(session, &StreamSession::SessionQuit, qGuiApp, &QGuiApplication::quit);
 }
 
 QmlMainWindow::~QmlMainWindow()
 {
     Q_ASSERT(!placebo_swapchain);
 
+#ifndef Q_OS_MACOS
     QMetaObject::invokeMethod(quick_render, &QQuickRenderControl::invalidate);
     render_thread->quit();
     render_thread->wait();
-    delete render_thread->parent();
-    delete render_thread;
+#endif
 
     delete quick_item;
     delete quick_window;
+    // calls invalidate here if not already called
     delete quick_render;
+    delete render_thread->parent();
     delete qml_engine;
     delete qt_vk_inst;
 
@@ -499,10 +498,7 @@ void QmlMainWindow::init(Settings *settings, bool exit_app_on_stream_exit)
         }
         if(session && exit_app_on_stream_exit)
         {
-            connect(session, &StreamSession::ConnectedChanged, this, [this]() {
-                if (session->IsConnected())
-                    connect(session, &StreamSession::SessionQuit, qGuiApp, &QGuiApplication::quit);
-            });
+            connect(session, &StreamSession::SessionQuit, qGuiApp, &QGuiApplication::quit);
         }
     });
     connect(backend, &QmlBackend::windowTypeUpdated, this, &QmlMainWindow::updateWindowType);
